@@ -13,7 +13,7 @@
 //     author: "Jane Doe",
 //     student-number: "1234567",
 //     supervisor: "Prof. John Smith",
-//     program: "Economics",
+//     topic: "Economics",
 //     degree: "Master's Degree",
 //     department: "Department of Economics",
 //     academic-year: "2024/2025",
@@ -38,14 +38,15 @@
 ///   graduation-month - Month of the graduation session (e.g. "March").
 ///   academic-year    - Academic year string (e.g. "2024/2025").
 ///   department       - Full department name as it appears on official documents.
-///   program          - Degree programme name (e.g. "Economics and Finance").
+///   topic            - Topic of the dissertation (e.g. "Economic Modeling").
 ///   university       - University name; defaults to the official Italian long form.
 ///   degree           - Degree type (e.g. "Master's Degree", "Bachelor's Degree").
+///   degree-name      - Name of the Degree (e.g. "Economics and Econometrics")
 ///   cover-font       - Font family used on the cover page. Defaults to
 ///                      "New Computer Modern". The Econ dept. recommends Times New Roman.
-///   layout           - Cover layout variant: "default" (Economics dept. style) or
+///   layout           - Cover layout variant: "no-logo" (Economics dept. style) or
 ///                      "logo" (official UniBo style with seal image).
-///   logo             - Logo image content (e.g. `image("unibo.png")`). Only used
+///   logo             - Path to logo image (e.g. `"unibo.png"`). Only used
 ///                      when layout is "logo".
 ///   labels           - Named tuple of UI strings, allowing the cover to be
 ///                      localised without changing the layout logic. Fields:
@@ -61,16 +62,16 @@
   student-number: "Your student no.",
   supervisor: "Prof. [Supervisor's first and last name]",
   co-supervisor: none,
-  graduation-session: "GRADUATION SESSION",
+  graduation-session: "ZERO-TH",
   graduation-month: "GRADUATION MONTH",
   academic-year: "ACADEMIC YEAR",
   department: "NAME OF DEPARTMENT",
-  program: "PROGRAM NAME",
+  topic: "TOPIC",
   university: "ALMA MATER STUDIORUM — UNIVERSITÀ DI BOLOGNA",
   degree: "DEGREE TYPE",
   degree-name: "DEGREE NAME",
   cover-font: "New Computer Modern",
-  layout: "default",
+  layout: "logo",
   logo: none,
   labels: (
     defended-by: "DEFENDED BY",
@@ -82,6 +83,10 @@
     academic-year: "Academic year",
   ),
 ) = {
+  assert(
+    layout in ("no-logo", "logo"),
+    message: "Invalid Layout: choose between logo and no-logo",
+  )
   if layout == "no-logo" {
     // Economics Department style guide
     page(
@@ -119,7 +124,7 @@
       #v(0.3cm)
 
       #text(size: 13pt, weight: "bold")[
-        #program
+        #degree-name
       ]
 
       #v(3cm)
@@ -128,6 +133,10 @@
       #text(size: 13pt, weight: "bold")[
         #title
       ]
+
+      #v(0.8cm)
+
+      #text(size: 11pt)[#labels.dissertation #labels.in-word #topic]
 
       // Push the candidate/supervisor block and session info to the bottom
       #v(1fr)
@@ -209,7 +218,6 @@
 
       #v(0.3cm)
 
-      // Dotted separator
       #degree-name
 
       #v(0.8cm)
@@ -219,8 +227,7 @@
 
       #v(0.8cm)
 
-      // "Dissertation in <program>" line
-      #text(size: 11pt)[#labels.dissertation #labels.in-word #program]
+      #text(size: 11pt)[#labels.dissertation #labels.in-word #topic]
 
       // Push candidate/supervisor block to the bottom
       #v(1fr)
@@ -263,7 +270,7 @@
 
       #v(0.5cm)
     ]
-  } 
+  }
 }
 
 
@@ -282,7 +289,7 @@
 ///                      and the cover page.
 ///   university       - University name shown at the top of the cover.
 ///   degree           - Degree type (e.g. "Master's Degree").
-///   program          - Degree programme name.
+///   topic          - Degree programme name.
 ///   author           - Candidate's full name.
 ///   student-number   - University matriculation number.
 ///   supervisor       - Supervisor's full name and title.
@@ -296,8 +303,8 @@
 ///   font             - Body text font. The Econ dept. recommends Times New Roman;
 ///                      defaults to "New Computer Modern".
 ///   cover-font       - Font used on the cover page (may differ from body font).
-///   layout           - Cover layout variant: "default" or "logo".
-///   logo             - Logo image (e.g. `image("unibo.png")`); used with "logo" layout.
+///   layout           - Cover layout variant: "no-logo" or "logo".
+///   logo             - Logo image (e.g. `"unibo.png"`); used with "logo" layout.
 ///   toc              - Whether to render the table of contents. Default: true.
 ///   locale           - BCP-47 language code used both for Typst's text direction
 ///                      and to select built-in label translations. Currently
@@ -315,20 +322,20 @@
   university: "ALMA MATER STUDIORUM — UNIVERSITÀ DI BOLOGNA",
   degree: "DEGREE TYPE",
   degree-name: "DEGREE NAME",
-  program: "PROGRAM NAME",
+  topic: "TOPIC",
   author: "Your Name",
   student-number: "0000000",
   supervisor: "Prof. Supervisor Name",
   co-supervisor: none,
-  academic-year: "2013/2014",
+  academic-year: "ACADEMIC YEAR",
   abstract: none,
   abstract-title: none,
   department: "NAME OF DEPARTMENT",
-  graduation-session: "GRADUATION SESSION",
+  graduation-session: "ZERO-TH",
   graduation-month: "GRADUATION MONTH",
   font: "New Computer Modern",
   cover-font: "New Computer Modern",
-  layout: "default",
+  layout: "logo",
   logo: none,
   toc: true,
   locale: "en",
@@ -338,33 +345,41 @@
 ) = {
   // Resolve localised UI strings. A caller-supplied `labels` dict takes
   // precedence over the built-in locale defaults.
-  let resolved-labels = if labels == none {
-    if locale == "it" {
-      (
-        defended-by: "CANDIDATO",
-        supervisor: "RELATORE",
-        co-supervisor: "CORRELATORE",
-        in-word: "in",
-        dissertation: "Tesi",
-        graduation-session: "Sessione",
-        academic-year: "Anno Accademico",
-        abstract-title: "Abstract",
-      )
-    } else {
-      // Default: English
-      (
-        defended-by: "DEFENDED BY",
-        supervisor: "SUPERVISOR",
-        co-supervisor: "CO-SUPERVISOR",
-        in-word: "in",
-        dissertation: "Dissertation",
-        graduation-session: "Graduation Session",
-        academic-year: "Academic year",
-        abstract-title: "Abstract",
-      )
-    }
+  let locale-defaults = if locale == "it" {
+    (
+      defended-by: "CANDIDATO",
+      supervisor: "RELATORE",
+      co-supervisor: "CORRELATORE",
+      in-word: "in",
+      dissertation: "Tesi",
+      graduation-session: "Sessione",
+      academic-year: "Anno Accademico",
+      abstract-title: "Abstract",
+    )
   } else {
-    labels
+    // Default: English
+    (
+      defended-by: "DEFENDED BY",
+      supervisor: "SUPERVISOR",
+      co-supervisor: "CO-SUPERVISOR",
+      in-word: "in",
+      dissertation: "Dissertation",
+      graduation-session: "Graduation Session",
+      academic-year: "Academic year",
+      abstract-title: "Abstract",
+    )
+  }
+
+  let resolved-labels = if labels == none {
+    locale-defaults
+  } else {
+    // Assert to catch typos when manually writing keys
+    let bad-keys = labels.keys().filter(k => k not in locale-defaults)
+    assert(
+      bad-keys.len() == 0,
+      message: "Unknown label keys: " + bad-keys.join(", "),
+    )
+    locale-defaults + labels
   }
 
   // Allow the caller to override just the abstract heading without providing
@@ -409,7 +424,7 @@
     academic-year: academic-year,
     degree: degree,
     degree-name: degree-name,
-    program: program,
+    topic: topic,
     university: university,
     department: department,
     cover-font: cover-font,
