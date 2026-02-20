@@ -49,6 +49,13 @@ can use `thesis-cover` directly:
 )
 ```
 
+
+## Procuring the Logo
+
+I can't technically bundle the logo by default. It can be found [in this page](https://www.unibo.it/en/university/statute-standards-strategies-and-reports/image-identity-brand), or downloaded directly from [this link (which I found simply in the previous link)](https://www.unibo.it/en/images/copy_of_logo.jpg).
+
+Just pass the logo image as the logo argument, and it'll all work
+
 ## Configuration
 
 All parameters have what I think are sensible defaults and can be omitted if not
@@ -76,7 +83,7 @@ needed.
 | `font`                  | Body font                                                                       | `"New Computer Modern"`                          |
 | `cover-font`            | Cover page font (can differ from body)                                          | `"New Computer Modern"`                          |
 | `layout`                | Cover layout: `"logo"` (official UniBo style) or `"no-logo"` (Econ dept. style) | `"logo"`                                         |
-| `logo`                  | Path to logo image (e.g. `"unibo-logo.png"`); only used with `"logo"` layout    | `none`                                           |
+| `logo`                  | Logo content (e.g. `image("unibo-logo.png")`); only used with `"logo"` layout   | `none`                                           |
 | `locale`                | `"en"` or `"it"` (controls built-in label translations and lang option)         | `"en"`                                           |
 | `labels`                | Override the template's localised strings manually (see below)                  | `none`                                           |
 
